@@ -4,26 +4,24 @@ import {
   getAvailableMoves,
   getGameStatus,
   getNextPlayer,
-  makeMove,
 } from '../engine'
 
 const scoreBoard = (status, maximizingPlayer, depth) => {
-  if (!status.isFinished) {
+  if (!status.isFinished || status.isDraw) {
     return 0
   }
 
-  if (status.isDraw) {
-    return 0
-  }
-
-  if (status.winner === maximizingPlayer) {
-    return 10 - depth
-  }
-
-  return depth - 10
+  return status.winner === maximizingPlayer ? 10 - depth : depth - 10
 }
 
-const minimax = (board, currentPlayer, maximizingPlayer, depth) => {
+const minimax = (
+  board,
+  currentPlayer,
+  maximizingPlayer,
+  depth,
+  alpha,
+  beta,
+) => {
   const status = getGameStatus(board)
 
   if (status.isFinished) {
@@ -37,18 +35,35 @@ const minimax = (board, currentPlayer, maximizingPlayer, depth) => {
   let bestMove = availableMoves[0]
 
   for (const move of availableMoves) {
-    const nextBoard = makeMove(board, move, currentPlayer)
-    const nextPlayer = getNextPlayer(currentPlayer)
-    const result = minimax(nextBoard, nextPlayer, maximizingPlayer, depth + 1)
+    board[move] = currentPlayer
 
-    if (isMaximizing && result.score > bestScore) {
-      bestScore = result.score
-      bestMove = move
+    const result = minimax(
+      board,
+      getNextPlayer(currentPlayer),
+      maximizingPlayer,
+      depth + 1,
+      alpha,
+      beta,
+    )
+
+    board[move] = null
+
+    if (isMaximizing) {
+      if (result.score > bestScore) {
+        bestScore = result.score
+        bestMove = move
+      }
+      alpha = Math.max(alpha, bestScore)
+    } else {
+      if (result.score < bestScore) {
+        bestScore = result.score
+        bestMove = move
+      }
+      beta = Math.min(beta, bestScore)
     }
 
-    if (!isMaximizing && result.score < bestScore) {
-      bestScore = result.score
-      bestMove = move
+    if (beta <= alpha) {
+      break
     }
   }
 
@@ -62,7 +77,16 @@ export const createMinimaxStrategy = (aiPlayer = PLAYER_O) => ({
       return null
     }
 
-    const { move } = minimax(board, aiPlayer, aiPlayer, 0)
+    const workingBoard = [...board]
+    const { move } = minimax(
+      workingBoard,
+      aiPlayer,
+      aiPlayer,
+      0,
+      -Infinity,
+      Infinity,
+    )
+
     return move
   },
 })
