@@ -1,0 +1,45 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+h1 {
+  margin: 0;
+}
+
+.subtitle,
+.status {
+  margin: 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 5rem);
+  gap: 0.5rem;
+}
+
+.cell {
+  width: 5rem;
+  height: 5rem;
+  font-size: 2rem;
+  border: 1px solid #555;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.cell:disabled {
+  cursor: default;
+  background-color: #f3f3f3;
+}
+
+.reset {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
