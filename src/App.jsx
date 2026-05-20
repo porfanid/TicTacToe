@@ -63,7 +63,7 @@ function App() {
   return (
     <main className="app">
       <h1>Tic Tac Toe</h1>
-      <p className="subtitle">Single player vs minimax algo</p>
+      <p className="subtitle">Single Player</p>
       <p className="status" aria-live="polite">
         {getStatusMessage(status, currentPlayer)}
       </p>
